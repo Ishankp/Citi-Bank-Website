@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class Account(BaseModel):
@@ -7,6 +7,17 @@ class Account(BaseModel):
     balance: float
     account_type: str
     created_at: str
+
+
+class AccountCreate(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    user_id: int = Field(alias="userId")
+    account_type: str = Field(alias="accountType")
+
+
+class MoneyRequest(BaseModel):
+    amount: float
 
 class Users(BaseModel):
     user_id: int

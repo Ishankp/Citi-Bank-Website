@@ -16,8 +16,14 @@ def create_account(user_id:int,account_type:str):
 
 #There is a one-to-many relationship between users and accounts, so we can have multiple accounts for a single user.
 #Therefore, we will return a list of accounts for a given user_id
-def get_account(user_id:int):
+def get_all_accounts(user_id: int):
     return [account for account in accounts if account["user_id"] == user_id]
+
+#Function that gets a specific account based on account_id
+#Returns the account if found, None if not found
+def get_account(account_id: int):
+    account = next((account for account in accounts if account["account_id"] == account_id), None)
+    return account
 
 #Function that changes the balance of the account given account_id
 #Returns the updated account if successful, None if account_id not found
