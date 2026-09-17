@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Transaction History - Citi Bank</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header>
+    <a href="../index.html"><h1>Citi Bank</h1></a>
+    <p class="tagline">Banking made simple, secure, and yours.</p>
+  </header>
+  <main class="wide">
+    <div class="card">
+      <h2>Transaction History</h2>
+      <p class="page-description">A full record of every deposit and withdrawal made on this account.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Transaction ID</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="transactions-body"></tbody>
+      </table>
+      <p class="error-message" id="error-message"></p>
+      <a class="back-link" id="back-link" href="#">&larr; Back to Account</a>
+    </div>
+  </main>
+  <footer>&copy; 2026 Citi Bank Website &mdash; a demo banking project.</footer>
+  <script src="../js/api.js"></script>
+  <script>
+    const accountId = getQueryParam("id");
+    document.getElementById("back-link").href = `account-details.html?id=${accountId}`;
+
+    async function loadTransactions() {
+      const errorMessage = document.getElementById("error-message");
+      try {
+        const transactions = await apiRequest(`/api/accounts/${accountId}/transactions`);
+        const tbody = document.getElementById("transactions-body");
+
+        if (transactions.length === 0) {
+          const emptyRow = document.createElement("tr");
+          emptyRow.innerHTML = `<td colspan="4" style="text-align: center; color: #777;">No transactions yet.</td>`;
+          tbody.appendChild(emptyRow);
+          return;
+        }
+
+        transactions.forEach((txn) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${txn.txn_id}</td>
+            <td>${txn.txn_type === "deposit" ? "Deposit" : "Withdraw"}</td>
+            <td>$${txn.amount.toFixed(2)}</td>
+            <td>${formatDate(txn.created_at)}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (error) {
+        errorMessage.textContent = error.message;
+      }
+    }
+
+    loadTransactions();
+  </script>
+</body>
+</html>

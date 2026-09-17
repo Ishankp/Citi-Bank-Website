@@ -41,6 +41,6 @@ def customer_withdraw(db: Session, account_id: int, amount: float):
         raise ValueError("Account not found.")
     if (curr_balance < amount):
         raise ValueError("Insufficient funds.")
-    return change_balance(account_id, curr_balance-amount)
+    return change_balance(db, account_id, curr_balance-amount)
 
 

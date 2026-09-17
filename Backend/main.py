@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from Backend import models
 from Backend.database import Base, engine
@@ -10,6 +11,13 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="My Layered Backend API",
     description="Testing business logic with hardcoded data",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(accounts_router)

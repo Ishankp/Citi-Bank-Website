@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Account - Citi Bank</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header>
+    <a href="../index.html"><h1>Citi Bank</h1></a>
+    <p class="tagline">Banking made simple, secure, and yours.</p>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Create Account</h2>
+      <p class="page-description">Tell us a bit about yourself and choose an account type to get started.</p>
+      <form id="create-account-form">
+        <label for="name">Name</label>
+        <input type="text" id="name" required />
+
+        <label for="email">Email</label>
+        <input type="email" id="email" required />
+
+        <label for="account-type">Account Type</label>
+        <select id="account-type" required>
+          <option value="Checking">Checking</option>
+          <option value="Savings">Savings</option>
+        </select>
+
+        <button type="submit">Submit</button>
+      </form>
+      <p class="error-message" id="error-message"></p>
+      <a class="back-link" href="../index.html">&larr; Back to Home</a>
+    </div>
+  </main>
+  <footer>&copy; 2026 Citi Bank Website &mdash; a demo banking project.</footer>
+  <script src="../js/api.js"></script>
+  <script>
+    document.getElementById("create-account-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const errorMessage = document.getElementById("error-message");
+      errorMessage.textContent = "";
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const accountType = document.getElementById("account-type").value;
+
+      try {
+        const user = await apiRequest("/api/users", {
+          method: "POST",
+          body: JSON.stringify({ name, email }),
+        });
+
+        const account = await apiRequest("/api/accounts", {
+          method: "POST",
+          body: JSON.stringify({ userId: user.user_id, accountType }),
+        });
+
+        window.location.href = `account-details.html?id=${account.account_id}`;
+      } catch (error) {
+        errorMessage.textContent = error.message;
+      }
+    });
+  </script>
+</body>
+</html>

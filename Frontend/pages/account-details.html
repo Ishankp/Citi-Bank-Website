@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Account Details - Citi Bank</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header>
+    <a href="../index.html"><h1>Citi Bank</h1></a>
+    <p class="tagline">Banking made simple, secure, and yours.</p>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Account Details</h2>
+      <p class="page-description">Here's a snapshot of your account. Use the buttons below to manage it.</p>
+      <div class="field"><span>Account ID</span><span id="account-id"></span></div>
+      <div class="field"><span>User Name</span><span id="user-name"></span></div>
+      <div class="field"><span>Balance</span><span id="balance"></span></div>
+
+      <div class="button-row">
+        <button id="deposit-btn">Deposit</button>
+        <button id="withdraw-btn">Withdraw</button>
+      </div>
+      <button class="secondary" id="transactions-btn">View Transactions</button>
+
+      <p class="error-message" id="error-message"></p>
+      <a class="back-link" href="../index.html">&larr; Back to Home</a>
+    </div>
+  </main>
+  <footer>&copy; 2026 Citi Bank Website &mdash; a demo banking project.</footer>
+  <script src="../js/api.js"></script>
+  <script>
+    const accountId = getQueryParam("id");
+    const errorMessage = document.getElementById("error-message");
+
+    async function loadAccount() {
+      try {
+        const account = await apiRequest(`/api/accounts/${accountId}`);
+        const user = await apiRequest(`/api/users/${account.user_id}`);
+
+        document.getElementById("account-id").textContent = account.account_id;
+        document.getElementById("user-name").textContent = user.name;
+        document.getElementById("balance").textContent = `$${account.balance.toFixed(2)}`;
+      } catch (error) {
+        errorMessage.textContent = error.message;
+      }
+    }
+
+    document.getElementById("deposit-btn").addEventListener("click", () => {
+      window.location.href = `deposit.html?id=${accountId}`;
+    });
+    document.getElementById("withdraw-btn").addEventListener("click", () => {
+      window.location.href = `withdraw.html?id=${accountId}`;
+    });
+    document.getElementById("transactions-btn").addEventListener("click", () => {
+      window.location.href = `transactions.html?id=${accountId}`;
+    });
+
+    loadAccount();
+  </script>
+</body>
+</html>
