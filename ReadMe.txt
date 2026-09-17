@@ -14,6 +14,10 @@ Install the backend dependencies:
 & ".venv\Scripts\python.exe" -m pip install -r requirements
 ```
 
+Copy `.env.example` to `.env` and fill in your real Supabase database password (percent-encode
+any special characters, e.g. `@` -> `%40`). `Backend/database.py` reads `DATABASE_URL` from this
+file to connect to the Supabase Postgres instance.
+
 Start the FastAPI development server:
 
 ```powershell

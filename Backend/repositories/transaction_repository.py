@@ -1,18 +1,15 @@
-from Backend.data.accounts import transactions
+from sqlalchemy.orm import Session
+
+from Backend.models import Transaction
 
 
-def view_transactions(account_id: int):
-    return [txn for txn in transactions if txn["account_id"] == account_id]
+def view_transactions(db: Session, account_id: int):
+    return db.query(Transaction).filter(Transaction.account_id == account_id).all()
 
 
-def create_transaction(account_id: int, amount: float, txn_type: str):
-    new_txn_id = max(txn["txn_id"] for txn in transactions) + 1
-    new_transaction = {
-        "txn_id": new_txn_id,
-        "account_id": account_id,
-        "txn_type": txn_type,
-        "amount": amount,
-        "created_at": "2023-01-15T10:30:00Z",
-    }
-    transactions.append(new_transaction)
+def create_transaction(db: Session, account_id: int, amount: float, txn_type: str):
+    new_transaction = Transaction(account_id=account_id, amount=amount, txn_type=txn_type)
+    db.add(new_transaction)
+    db.commit()
+    db.refresh(new_transaction)
     return new_transaction
