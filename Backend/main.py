@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from mangum import Mangum
 
 from Backend import models
 from Backend.database import Base, engine
@@ -36,5 +37,13 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+
+@app.get("/api/health")
+def api_health_check():
+    return {"status": "healthy"}
+
+
+handler = Mangum(app)
 
 
