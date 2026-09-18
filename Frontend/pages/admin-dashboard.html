@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Dashboard - Citi Bank</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header>
+    <a href="../index.html"><h1>Citi Bank</h1></a>
+    <p class="tagline">Banking made simple, secure, and yours.</p>
+  </header>
+  <main class="wide">
+    <div class="card">
+      <h2>Admin Dashboard</h2>
+      <p class="page-description" id="welcome-message"></p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Accounts</th>
+          </tr>
+        </thead>
+        <tbody id="users-body"></tbody>
+      </table>
+
+      <p class="error-message" id="error-message"></p>
+      <a class="back-link" href="#" id="logout-link">&larr; Log Out</a>
+    </div>
+  </main>
+  <footer>&copy; 2026 Citi Bank Website &mdash; a demo banking project.</footer>
+  <script src="../js/api.js"></script>
+  <script>
+    const user = requireSession();
+
+    if (user && !user.is_admin) {
+      window.location.href = "select-account.html";
+    } else if (user) {
+      document.getElementById("welcome-message").textContent = `Logged in as admin: ${user.name}`;
+
+      async function loadUsers() {
+        const errorMessage = document.getElementById("error-message");
+        try {
+          const users = await apiRequest(`/api/admin/users`);
+          const tbody = document.getElementById("users-body");
+
+          for (const customer of users) {
+            const accounts = await apiRequest(`/api/users/${customer.user_id}/accounts`);
+            const row = document.createElement("tr");
+
+            const accountLinks = accounts
+              .map(
+                (account) =>
+                  `<a href="account-details.html?id=${account.account_id}">#${account.account_id} (${account.account_type})</a>`
+              )
+              .join(", ") || "<span style=\"color:#999;\">No accounts</span>";
+
+            row.innerHTML = `
+              <td>${customer.name}${customer.is_admin ? " (admin)" : ""}</td>
+              <td>${customer.email}</td>
+              <td>${accountLinks}</td>
+            `;
+            tbody.appendChild(row);
+          }
+        } catch (error) {
+          errorMessage.textContent = error.message;
+        }
+      }
+
+      loadUsers();
+    }
+
+    document.getElementById("logout-link").addEventListener("click", (event) => {
+      event.preventDefault();
+      clearSession();
+      window.location.href = "../login.html";
+    });
+  </script>
+</body>
+</html>

@@ -29,11 +29,23 @@ class Users(BaseModel):
     user_id: int
     name: str
     email: str
+    is_admin: bool
     created_at: datetime
 
 class UserCreate(BaseModel):
     name: str
     email: str
+    password: str = Field(min_length=6)
+    is_admin: bool = False
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    user: Users
 
 class Transactions(BaseModel):
     model_config = ConfigDict(from_attributes=True)

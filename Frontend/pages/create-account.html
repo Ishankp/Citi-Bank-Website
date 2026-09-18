@@ -21,11 +21,19 @@
         <label for="email">Email</label>
         <input type="email" id="email" required />
 
+        <label for="password">Password</label>
+        <input type="password" id="password" minlength="6" required />
+
         <label for="account-type">Account Type</label>
         <select id="account-type" required>
           <option value="Checking">Checking</option>
           <option value="Savings">Savings</option>
         </select>
+
+        <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 400;">
+          <input type="checkbox" id="is-admin" style="width: auto;" />
+          Register as an admin
+        </label>
 
         <button type="submit">Submit</button>
       </form>
@@ -43,13 +51,26 @@
 
       const name = document.getElementById("name").value;
       const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
       const accountType = document.getElementById("account-type").value;
+      const isAdmin = document.getElementById("is-admin").checked;
 
       try {
         const user = await apiRequest("/api/users", {
           method: "POST",
-          body: JSON.stringify({ name, email }),
+          body: JSON.stringify({ name, email, password, is_admin: isAdmin }),
         });
+
+        const token = await apiRequest("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ email, password }),
+        });
+        setSession(token.access_token, token.user);
+
+        if (isAdmin) {
+          window.location.href = "admin-dashboard.html";
+          return;
+        }
 
         const account = await apiRequest("/api/accounts", {
           method: "POST",

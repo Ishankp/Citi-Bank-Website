@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Select Account - Citi Bank</title>
+  <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+  <header>
+    <a href="../index.html"><h1>Citi Bank</h1></a>
+    <p class="tagline">Banking made simple, secure, and yours.</p>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Your Accounts</h2>
+      <p class="page-description" id="welcome-message"></p>
+
+      <div id="accounts-list"></div>
+
+      <button id="new-account-btn" class="secondary">Open a New Account</button>
+      <p class="error-message" id="error-message"></p>
+      <a class="back-link" href="#" id="logout-link">&larr; Log Out</a>
+    </div>
+  </main>
+  <footer>&copy; 2026 Citi Bank Website &mdash; a demo banking project.</footer>
+  <script src="../js/api.js"></script>
+  <script>
+    const user = requireSession();
+
+    if (user) {
+      document.getElementById("welcome-message").textContent = `Welcome back, ${user.name}. Choose an account below.`;
+
+      async function loadAccounts() {
+        const errorMessage = document.getElementById("error-message");
+        try {
+          const accounts = await apiRequest(`/api/users/${user.user_id}/accounts`);
+          const list = document.getElementById("accounts-list");
+
+          if (accounts.length === 0) {
+            list.innerHTML = `<p style="color: #777;">You don't have any accounts yet.</p>`;
+            return;
+          }
+
+          accounts.forEach((account) => {
+            const button = document.createElement("button");
+            button.className = "secondary";
+            button.textContent = `${account.account_type} — Account #${account.account_id} — $${account.balance.toFixed(2)}`;
+            button.addEventListener("click", () => {
+              window.location.href = `account-details.html?id=${account.account_id}`;
+            });
+            list.appendChild(button);
+          });
+        } catch (error) {
+          errorMessage.textContent = error.message;
+        }
+      }
+
+      loadAccounts();
+    }
+
+    document.getElementById("new-account-btn").addEventListener("click", () => {
+      window.location.href = "create-account.html";
+    });
+
+    document.getElementById("logout-link").addEventListener("click", (event) => {
+      event.preventDefault();
+      clearSession();
+      window.location.href = "../login.html";
+    });
+  </script>
+</body>
+</html>
